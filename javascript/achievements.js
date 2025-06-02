@@ -1,15 +1,19 @@
 /**
- * EcoTracker - Enhanced Achievements System with IMPROVED Duplicate Prevention
- * Complete file with easy-to-get achievements and strong duplicate prevention
+ * EcoTracker - Enhanced Achievements System (COMPLETE FIXED VERSION)
+ * Complete file with easy-to-get achievements and FIXED duplicate prevention
+ * NO MORE INFINITE RECURSION - Stack overflow issues resolved
  */
 
-// Add a global achievement state tracker for duplicate prevention
+// Global achievement state tracker for duplicate prevention - FIXED
 let achievementProcessing = {
     isChecking: false,
     recentlyUnlocked: new Set(),
     lastCheckTime: 0,
     cooldownPeriod: 1000 // 1 second cooldown between checks
 };
+
+// Global flag to prevent multiple simultaneous checks - NEW
+let isCheckingAchievements = false;
 
 // Enhanced achievements data with easier unlocks and better descriptions
 const achievements = [
@@ -653,7 +657,31 @@ function saveUserAchievements() {
 }
 
 /**
- * Enhanced achievement checking with STRONG duplicate prevention
+ * FIXED: Safe achievement checking with recursion prevention
+ */
+function safeCheckAchievements() {
+    // Prevent multiple simultaneous checks
+    if (isCheckingAchievements) {
+        console.log('🔒 Achievement check already in progress, skipping...');
+        return false;
+    }
+    
+    try {
+        isCheckingAchievements = true;
+        const result = checkAllAchievements();
+        return result;
+    } catch (error) {
+        console.error('❌ Error in achievement checking:', error);
+        achievementProcessing.isChecking = false; // Reset flag on error
+        return false;
+    } finally {
+        // Always reset the flag, even if there's an error
+        isCheckingAchievements = false;
+    }
+}
+
+/**
+ * FIXED: Enhanced achievement checking with STRONG duplicate prevention - NO RECURSION
  */
 function checkAllAchievements() {
     if (!currentUser) return false;
@@ -705,14 +733,14 @@ function checkAllAchievements() {
         saveUserAchievements();
         updateAchievementsProgress();
         
-        // Show notifications with delays and additional duplicate prevention
+        // Show notifications with delays - NO RECURSIVE CALLS
         newAchievements.forEach((achievement, index) => {
             setTimeout(() => {
                 // Double-check before showing notification
                 if (achievement.isUnlocked && !enhancedNotificationSystem.activeNotifications.has(achievement.id)) {
                     enhancedNotificationSystem.showAchievementNotification(achievement);
                     
-                    // Update achievement display if on achievements page
+                    // Update achievement display if on achievements page - NO RECURSIVE CALLS
                     const achievementsPage = document.getElementById('achievementsPage');
                     if (achievementsPage && achievementsPage.style.display !== 'none') {
                         setTimeout(() => {
@@ -1103,42 +1131,42 @@ function animateValue(element, start, end, duration) {
 }
 
 /**
- * Debounced achievement checking to prevent rapid calls
+ * FIXED: Debounced achievement checking to prevent rapid calls - NO RECURSION
  */
 const debouncedCheckAchievements = (function() {
     let timeout;
     return function() {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
-            safeCheckAchievements();
+            // Call the safe version directly, not recursively
+            if (!isCheckingAchievements && currentUser) {
+                safeCheckAchievements();
+            }
         }, 500); // 500ms debounce
     };
 })();
 
 /**
- * Safe achievement checking with error boundaries
- */
-function safeCheckAchievements() {
-    try {
-        return checkAllAchievements();
-    } catch (error) {
-        console.error('❌ Error in achievement checking:', error);
-        achievementProcessing.isChecking = false; // Reset flag on error
-        return false;
-    }
-}
-
-/**
- * Optimized achievement check functions
+ * FIXED: Optimized achievement check functions - NO RECURSION
  */
 function checkAchievementsOnWaterLog() {
     console.log('💧 Checking water-related achievements...');
-    debouncedCheckAchievements();
+    // Use timeout to prevent immediate recursion
+    setTimeout(() => {
+        if (!isCheckingAchievements) {
+            debouncedCheckAchievements();
+        }
+    }, 100);
 }
 
 function checkAchievementsOnEnergyLog() {
     console.log('⚡ Checking energy-related achievements...');
-    debouncedCheckAchievements();
+    // Use timeout to prevent immediate recursion
+    setTimeout(() => {
+        if (!isCheckingAchievements) {
+            debouncedCheckAchievements();
+        }
+    }, 100);
 }
 
 /**
@@ -1186,9 +1214,9 @@ window.addEventListener('beforeunload', () => {
     }
 });
 
-// Export functions for use in other modules
+// FIXED Export functions - Use safe versions
 if (typeof window !== 'undefined') {
-    window.checkAllAchievements = safeCheckAchievements;
+    window.checkAllAchievements = safeCheckAchievements;  // Use safe version
     window.initAchievementsPage = initAchievementsPage;
     window.checkAchievementsOnWaterLog = checkAchievementsOnWaterLog;
     window.checkAchievementsOnEnergyLog = checkAchievementsOnEnergyLog;
@@ -1196,4 +1224,7 @@ if (typeof window !== 'undefined') {
     window.loadUserAchievements = loadUserAchievements;
     window.saveUserAchievements = saveUserAchievements;
     window.notificationSystem = enhancedNotificationSystem;
+    
+    // Also export the safe checking function
+    window.safeCheckAchievements = safeCheckAchievements;
 }
