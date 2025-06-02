@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTracker - Water & Energy Usage Tracker</title>
+    <!-- Code to show where Icons and fonts are located and transfered from-->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+<!--Header with mobile-friendly navigation -->
+<header>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-leaf"></i>
+            <span>EcoTracker</span>
+        </div>
+        
+        <!--Mobile menu toggle -->
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!--Navigation -->
+        <nav class="main-nav" id="mainNav">
+            <ul class="nav-links">
+                <li><a href="#" class="nav-link active" data-page="dashboardPage">
+                    <i class="fas fa-home"></i><span>Dashboard</span>
+                </a></li>
+                <li><a href="#" class="nav-link" data-page="historyPage">
+                    <i class="fas fa-chart-line"></i><span>History</span>
+                </a></li>
+                <li><a href="#" class="nav-link" data-page="tipsPage">
+                    <i class="fas fa-lightbulb"></i><span>Tips</span>
+                </a></li>
+                <li><a href="#" class="nav-link" data-page="achievementsPage">
+                    <i class="fas fa-trophy"></i><span>Achievements</span>
+                </a></li>
+            </ul>
+            
+            <!--Auth/User actions -->
+            <div class="nav-actions">
+                <div class="auth-links signed-out">
+                    <a href="#" class="nav-btn login-btn" id="showLoginBtn">Login</a>
+                    <a href="#" class="nav-btn signup-btn" id="showRegisterBtn">Sign Up</a>
+                </div>
+                <div class="auth-links signed-in">
+                    <a href="#" class="nav-btn settings-btn" id="settingsBtn">
+                        <i class="fas fa-cog"></i><span>Settings</span>
+                    </a>
+                    <a href="#" class="nav-btn logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
+
+    <!--Dashboard Page -->
+    <div class="container page-container dashboard-container" id="dashboardPage">
+        <div class="dashboard">
+            <div class="welcome-section">
+                <div class="greeting">
+                    <h1 id="greetingText">Good morning, User!</h1>
+                    <div class="date" id="currentDate">Loading date...</div>
+                </div>
+                <div class="period-selector">
+                    <label>Tracking Period:</label>
+                    <select id="globalPeriodSelect" class="form-select">
+                        <option value="7">Last 7 days</option>
+                        <option value="14">Last 14 days</option>
+                        <option value="30">Last 30 days</option>
+                        <option value="90">Last 90 days</option>
+                    </select>
+                </div>
+            </div>
+
+            <!--Water Usage Card -->
+            <div class="card usage-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-tint water-icon"></i>
+                        <span>Water Usage</span>
+                    </div>
+                    <span id="waterTarget" class="target-badge">Target: 150L</span>
+                </div>
+                <div class="card-content">
+                    <div class="circle-progress">
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle class="circle-progress-path water-progress" cx="75" cy="75" r="65" id="waterProgressCircle"></circle>
+                        </svg>
+                        <div class="circle-text">
+                            <div class="circle-value" id="waterUsage">0</div>
+                            <div class="circle-label">Liters</div>
+                        </div>
+                    </div>
+                    <div class="empty-state" id="waterEmptyState">
+                        <i class="fas fa-tint water-icon"></i>
+                        <h3>No Water Data Yet</h3>
+                        <p>Start tracking your water usage to see insights here.</p>
+                        <button class="btn btn-primary pulse-btn" id="addWaterBtn">
+                            <i class="fas fa-plus"></i> Add Water Usage
+                        </button>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" id="logWaterBtn">
+                        <i class="fas fa-plus"></i> Log Water Usage
+                    </button>
+                </div>
+            </div>
+
+            <!--Energy Usage Card -->
+            <div class="card usage-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-bolt energy-icon"></i>
+                        <span>Energy Usage</span>
+                    </div>
+                    <span id="energyTarget" class="target-badge">Target: 10kWh</span>
+                </div>
+                <div class="card-content">
+                    <div class="circle-progress">
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle class="circle-progress-path energy-progress" cx="75" cy="75" r="65" id="energyProgressCircle"></circle>
+                        </svg>
+                        <div class="circle-text">
+                            <div class="circle-value" id="energyUsage">0</div>
+                            <div class="circle-label">kWh</div>
+                        </div>
+                    </div>
+                    <div class="empty-state" id="energyEmptyState">
+                        <i class="fas fa-bolt energy-icon"></i>
+                        <h3>No Energy Data Yet</h3>
+                        <p>Start tracking your energy usage to see insights here.</p>
+                        <button class="btn btn-primary pulse-btn" id="addEnergyBtn">
+                            <i class="fas fa-plus"></i> Add Energy Usage
+                        </button>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" id="logEnergyBtn">
+                        <i class="fas fa-plus"></i> Log Energy Usage
+                    </button>
+                </div>
+            </div>
+
+            <!--Savings Card -->
+            <div class="card savings-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-coins savings-icon"></i>
+                        <span>Estimated Savings</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="circle-progress">
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle class="circle-progress-path progress-low" cx="75" cy="75" r="65" id="savingsProgressCircle"></circle>
+                        </svg>
+                        <div class="circle-text">
+                            <div class="circle-value" id="savingsAmount">R0</div>
+                            <div class="circle-label">Monthly</div>
+                        </div>
+                    </div>
+                    <div class="empty-state" id="savingsEmptyState">
+                        <i class="fas fa-coins savings-icon"></i>
+                        <h3>No Savings Data Yet</h3>
+                        <p>Start tracking your usage to see potential savings.</p>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-secondary" id="viewSavingsBtn">
+                        <i class="fas fa-chart-line"></i> View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips Section on Dashboard -->
+        <div class="tips-section">
+            <h2><i class="fas fa-lightbulb tip-icon"></i> Personalized Tips</h2>
+            <div class="tips-container" id="dashboardTips">
+                <!-- Tips will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Pages -->
+    <div class="container auth-pages">
+        <div class="auth-container" id="loginPage">
+            <div class="auth-header">
+                <h2>Welcome Back</h2>
+                <p>Log in to track your sustainable lifestyle</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="Enter your email" required>
+                    <div class="error-message" id="loginEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+                    <div class="error-message" id="loginPasswordError"></div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn">
+                    <span class="btn-text">Login</span>
+                    <i class="fas fa-spinner fa-spin btn-spinner" style="display: none;"></i>
+                </button>
+            </form>
+            <div class="form-footer">
+                Don't have an account? <a href="#" id="switchToRegister">Sign up</a>
+            </div>
+        </div>
+
+        <div class="auth-container" id="registerPage" style="display: none;">
+            <div class="auth-header">
+                <h2>Create Account</h2>
+                <p>Join us in creating a sustainable future</p>
+            </div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Full Name</label>
+                    <input type="text" id="registerName" class="form-control" placeholder="Enter your full name" required>
+                    <div class="error-message" id="registerNameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" class="form-control" placeholder="Enter your email" required>
+                    <div class="error-message" id="registerEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" class="form-control" placeholder="Create a password" required minlength="6">
+                    <div class="error-message" id="registerPasswordError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Confirm Password</label>
+                    <input type="password" id="registerConfirmPassword" class="form-control" placeholder="Confirm your password" required>
+                    <div class="error-message" id="registerConfirmPasswordError"></div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" id="registerSubmitBtn">
+                    <span class="btn-text">Sign Up</span>
+                    <i class="fas fa-spinner fa-spin btn-spinner" style="display: none;"></i>
+                </button>
+            </form>
+            <div class="form-footer">
+                Already have an account? <a href="#" id="switchToLogin">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Page -->
+    <div class="container page-container" id="historyPage" style="display: none;">
+        <div class="history-layout">
+            <!-- Left Column - Pie Chart -->
+            <div class="history-sidebar">
+                <div class="card pie-chart-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Usage Breakdown</span>
+                        </div>
+                        <div class="chart-period">
+                            <span id="pieChartPeriodDisplay">Last 7 days</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="pie-chart-container" id="pieChartContainer">
+                            <!-- CSS-based pie chart will be rendered here -->
+                        </div>
+                        <div class="pie-chart-legend" id="pieChartLegend">
+                            <!-- Legend will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Main Content -->
+            <div class="history-main">
+                <div class="dashboard">
+                    <div class="welcome-section">
+                        <div class="greeting">
+                            <h1>Usage History</h1>
+                            <div class="date" id="historyCurrentDate">Loading date...</div>
+                        </div>
+                        <div class="date-range-selector">
+                            <button class="btn btn-icon" id="prevPeriodBtn"><i class="fas fa-chevron-left"></i></button>
+                            <div class="tracking-period">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span id="historyPeriodText">Last 7 days</span>
+                            </div>
+                            <button class="btn btn-icon" id="nextPeriodBtn"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Usage Chart Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Usage Over Time</span>
+                            </div>
+                            <div class="chart-toggle">
+                                <button class="chart-toggle-btn active" data-type="water">Water</button>
+                                <button class="chart-toggle-btn" data-type="energy">Energy</button>
+                                <button class="chart-toggle-btn" data-type="combined">Combined</button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container" id="usageChartContainer">
+                                <!-- CSS-based line chart will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logs Section -->
+                    <div class="logs-section">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="water">
+                                <i class="fas fa-tint"></i> Water Usage
+                            </div>
+                            <div class="tab" data-tab="energy">
+                                <i class="fas fa-bolt"></i> Energy Usage
+                            </div>
+                        </div>
+
+                        <!-- Water Logs Tab -->
+                        <div class="tab-content active" id="waterTabContent">
+                            <div class="filters">
+                                <div class="search-container">
+                                    <input type="text" id="waterSearchInput" placeholder="Search notes...">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <div class="sort-container">
+                                    <select id="waterSortSelect" class="form-select">
+                                        <option value="date-desc">Date (Newest First)</option>
+                                        <option value="date-asc">Date (Oldest First)</option>
+                                        <option value="amount-desc">Amount (Highest First)</option>
+                                        <option value="amount-asc">Amount (Lowest First)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="logs-table-container">
+                                <table class="logs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Amount (L)</th>
+                                            <th>Notes</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="waterLogsTableBody">
+                                        <!-- Water logs will be populated here -->
+                                    </tbody>
+                                </table>
+                                <div class="empty-state" id="waterLogsEmptyState">
+                                    <i class="fas fa-tint"></i>
+                                    <h3>No Water Data Yet</h3>
+                                    <p>Start tracking your water usage to see your history here.</p>
+                                    <button class="btn btn-primary" id="historyAddWaterBtn">Add Water Usage</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Energy Logs Tab -->
+                        <div class="tab-content" id="energyTabContent">
+                            <div class="filters">
+                                <div class="search-container">
+                                    <input type="text" id="energySearchInput" placeholder="Search notes...">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <div class="sort-container">
+                                    <select id="energySortSelect" class="form-select">
+                                        <option value="date-desc">Date (Newest First)</option>
+                                        <option value="date-asc">Date (Oldest First)</option>
+                                        <option value="amount-desc">Amount (Highest First)</option>
+                                        <option value="amount-asc">Amount (Lowest First)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="logs-table-container">
+                                <table class="logs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Amount (kWh)</th>
+                                            <th>Notes</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="energyLogsTableBody">
+                                        <!-- Energy logs will be populated here -->
+                                    </tbody>
+                                </table>
+                                <div class="empty-state" id="energyLogsEmptyState">
+                                    <i class="fas fa-bolt"></i>
+                                    <h3>No Energy Data Yet</h3>
+                                    <p>Start tracking your energy usage to see your history here.</p>
+                                    <button class="btn btn-primary" id="historyAddEnergyBtn">Add Energy Usage</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Data Export Section -->
+                    <div class="card export-section">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-file-export"></i>
+                                <span>Export Data</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p>Download your usage data for analysis or backup.</p>
+                            <div class="export-buttons">
+                                <button class="btn btn-secondary" id="exportCSVBtn">
+                                    <i class="fas fa-file-csv"></i> Export as CSV
+                                </button>
+                                <button class="btn btn-secondary" id="exportJSONBtn">
+                                    <i class="fas fa-file-code"></i> Export as JSON
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tips Page -->
+    <div class="container page-container tips-page" id="tipsPage" style="display: none;">
+        <div class="page-header">
+            <h1><i class="fas fa-lightbulb"></i> Sustainability Tips</h1>
+            <div class="category-filter">
+                <div class="filter-btn active" data-category="all">All Tips</div>
+                <div class="filter-btn" data-category="water">Water</div>
+                <div class="filter-btn" data-category="energy">Energy</div>
+                <div class="filter-btn" data-category="general">General</div>
+            </div>
+        </div>
+        
+        <div class="tips-container" id="tipsContainer">
+            <!-- Tips will be loaded here dynamically -->
+            <div class="loading-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading tips...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Page -->
+    <div class="container page-container" id="achievementsPage" style="display: none;">
+        <div class="page-header">
+            <h1><i class="fas fa-trophy"></i> Your Achievements</h1>
+            <p>Track your sustainability milestones and earn badges as you go.</p>
+        </div>
+        
+        <div class="achievements-stats">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i class="fas fa-trophy"></i>
+                        <span>Achievement Progress</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="achievement-stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalAchievements">0/15</div>
+                            <div class="stat-label">Total Achievements</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="achievementPoints">0</div>
+                            <div class="stat-label">Points Earned</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="nextAchievement">None</div>
+                            <div class="stat-label">Next Achievement</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="achievement-categories">
+            <div class="category-tabs">
+                <button class="category-tab active" data-category="all">All</button>
+                <button class="category-tab" data-category="water">Water</button>
+                <button class="category-tab" data-category="energy">Energy</button>
+                <button class="category-tab" data-category="streak">Streaks</button>
+                <button class="category-tab" data-category="tips">Tips</button>
+                <button class="category-tab" data-category="special">Special</button>
+            </div>
+        </div>
+
+        <div class="achievements-grid" id="achievementsGrid">
+            <!-- Achievements will be populated here via JavaScript -->
+            <div class="loading-state">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading achievements...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Water Usage Modal -->
+    <div class="modal" id="waterModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Log Water Usage</h3>
+                <span class="close-btn">&times;</span>
+            </div>
+            <form id="waterForm">
+                <div class="form-group">
+                    <label for="waterAmount">Amount (Liters)</label>
+                    <input type="number" id="waterAmount" class="form-control" placeholder="Enter water usage in liters" required min="0">
+                    <div class="error-message" id="waterAmountError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="waterDate">Date</label>
+                    <input type="date" id="waterDate" class="form-control" required>
+                    <div class="error-message" id="waterDateError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="waterNotes">Notes (Optional)</label>
+                    <textarea id="waterNotes" class="form-control" rows="3" placeholder="Add notes about your water usage"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="waterSubmitBtn">
+                        <span class="btn-text">Save</span>
+                        <i class="fas fa-spinner fa-spin btn-spinner" style="display: none;"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--Energy Usage Modal -->
+    <div class="modal" id="energyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Log Energy Usage</h3>
+                <span class="close-btn">&times;</span>
+            </div>
+            <form id="energyForm">
+                <div class="form-group">
+                    <label for="energyAmount">Amount (kWh)</label>
+                    <input type="number" id="energyAmount" class="form-control" placeholder="Enter energy usage in kWh" required min="0" step="0.1">
+                    <div class="error-message" id="energyAmountError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="energyDate">Date</label>
+                    <input type="date" id="energyDate" class="form-control" required>
+                    <div class="error-message" id="energyDateError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="energyNotes">Notes (Optional)</label>
+                    <textarea id="energyNotes" class="form-control" rows="3" placeholder="Add notes about your energy usage"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="energySubmitBtn">
+                        <span class="btn-text">Save</span>
+                        <i class="fas fa-spinner fa-spin btn-spinner" style="display: none;"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--Savings Detail Modal -->
+    <div class="modal" id="savingsDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Savings Breakdown</h3>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="savings-breakdown" id="savingsBreakdown">
+                    <!--Savings details will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Settings</h3>
+                <span class="close-btn">&times;</span>
+            </div>
+            <form id="settingsForm" class="settings-form">
+                <div class="form-group">
+                    <label for="waterGoal">Daily Water Goal (Liters)</label>
+                    <input type="number" id="waterGoal" class="form-control" placeholder="Enter your daily water usage goal" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="energyGoal">Daily Energy Goal (kWh)</label>
+                    <input type="number" id="energyGoal" class="form-control" placeholder="Enter your daily energy usage goal" min="0" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="currencySelect">Currency</label>
+                    <div class="select-wrapper">
+                        <select id="currencySelect" class="form-select">
+                            <option value="$">USD ($)</option>
+                            <option value="€">EUR (€)</option>
+                            <option value="£">GBP (£)</option>
+                            <option value="R">ZAR (R)</option>
+                            <option value="¥">JPY (¥)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--Edit Log Modal -->
+    <div class="modal" id="editLogModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="editModalTitle">Edit Log</h3>
+                <span class="close-btn">&times;</span>
+            </div>
+            <form id="editLogForm">
+                <input type="hidden" id="editLogId">
+                <input type="hidden" id="editLogType">
+                <div class="form-group">
+                    <label for="editLogAmount">Amount</label>
+                    <input type="number" id="editLogAmount" class="form-control" required min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="editLogDate">Date</label>
+                    <input type="date" id="editLogDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editLogNotes">Notes (Optional)</label>
+                    <textarea id="editLogNotes" class="form-control" rows="3" placeholder="Add notes about your usage"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-danger" id="deleteLogBtn">Delete</button>
+                    <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--Tip Detail Modal -->
+    <div class="modal" id="tipDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="tipDetailTitle">Tip Title</h3>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="tip-icon-large" id="tipDetailIcon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="tip-difficulty" id="tipDetailDifficulty">
+                    <span class="difficulty-label">Difficulty:</span>
+                    <span class="difficulty-value">Easy</span>
+                </div>
+                <div class="tip-saving" id="tipDetailSaving">
+                    <span class="saving-label">Potential Savings:</span>
+                    <span class="saving-value">High</span>
+                </div>
+                <div class="tip-description" id="tipDetailDescription">
+                    Detailed tip information will be displayed here.
+                </div>
+                <div class="tip-tried-container">
+                    <button class="btn btn-primary" id="markTriedBtn">Mark as Tried</button>
+                    <div class="tip-tried-status" id="tipTriedStatus" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <span>You've tried this tip!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Achievement Detail Modal -->
+    <div class="modal" id="achievementDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="achievementModalTitle">Achievement Title</h3>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div class="achievement-detail-content">
+                <div class="achievement-detail-icon">
+                    <i class="fas fa-trophy" id="achievementDetailIcon"></i>
+                </div>
+                <div class="achievement-detail-info">
+                    <div class="achievement-detail-description" id="achievementDetailDescription">
+                        Achievement description goes here.
+                    </div>
+                    <div class="achievement-detail-stats">
+                        <div class="detail-stat">
+                            <span class="detail-label">Category:</span>
+                            <span class="detail-value" id="achievementDetailCategory">Water</span>
+                        </div>
+                        <div class="detail-stat">
+                            <span class="detail-label">Points:</span>
+                            <span class="detail-value" id="achievementDetailPoints">50</span>
+                        </div>
+                        <div class="detail-stat">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value" id="achievementDetailStatus">Locked</span>
+                        </div>
+                    </div>
+                    <div class="achievement-progress" id="achievementProgressContainer">
+                        <label>Progress: <span id="achievementProgressText">0/7</span></label>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="achievementProgressBar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Notification banner -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText">Notification message</span>
+    </div>
+
+    <!--Achievement Popup Notification -->
+    <div class="modal" id="achievementPopup" style="display: none;">
+        <div class="modal-content achievement-popup-content">
+            <div class="achievement-popup-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="achievement-popup-info">
+                <div class="achievement-popup-title">Achievement Unlocked!</div>
+                <div class="achievement-popup-name" id="popupName">Achievement Name</div>
+                <div class="achievement-popup-points" id="popupPoints">+50 points</div>
+            </div>
+        </div>
+    </div>
+
+    <!--Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Loading...</span>
+        </div>
+    </div>
+
+    <footer>
+        <p>Created by Masase Mukhinindi | Student Number: 23412220</p>
+    </footer>
+
+    <!--JavaScript Files -->
+    <script src="javascript/utils.js"></script>
+    <script src="javascript/main.js"></script>
+    <script src="javascript/achievements.js"></script>
+    <script src="javascript/history.js"></script>
+    <script src="javascript/tips.js"></script>
+</body>
+</html>
